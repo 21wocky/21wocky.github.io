@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@21wocky</title>
+    <style>
+        body {
+            background-color: #0000AA; /* Windows blue background */
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+        }
+        .window-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            flex-direction: row;
+            gap: 10px;
+            position: absolute;
+        }
+        .window {
+            background-color: white;
+            width: 300px;
+            padding: 20px;
+            border: 2px solid #000;
+            box-shadow: 5px 5px #555;
+            cursor: default;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .close-button {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            color: red;
+            font-weight: bold;
+        }
+        .text-box {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            user-select: none;
+        }
+        .link-box {
+            background-color: #0000AA;
+            color: white;
+            text-align: center;
+            padding: 12px 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            width: 100%;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .link-box a {
+            color: white;
+            text-decoration: none;
+        }
+        .link-box:hover {
+            background-color: #000088;
+        }
+        .input-box {
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+        /* Hide content by default */
+        #content {
+            display: none; /* Hidden until login */
+        }
+
+        #admin-panel {
+            display: none;
+        }
+
+        /* Announcement Modal */
+        #announcementModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            width: 400px;
+            padding: 20px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border: 2px solid #000;
+        }
+        .announcement-modal-close {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            color: red;
+            font-weight: bold;
+        }
+        .announcement-input {
+            width: calc(100% - 20px);
+            height: 100px;
+            padding: 10px;
+            font-size: 14px;
+            border: 2px solid #000;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            resize: none;
+            margin-bottom: 10px;
+        }
+        .announcement-submit {
+            background-color: #0000AA;
+            color: white;
+            padding: 12px 16px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            border-radius: 5px;
+        }
+        .announcement-submit:hover {
+            background-color: #000088;
+        }
+    </style>
+</head>
+<body>
+    <!-- Password Prompt Window -->
+    <div id="passwordPrompt" class="window">
+        <div class="close-button" onclick="closeWindow('passwordPrompt')">X</div>
+        <div class="text-box">Enter the Password</div>
+        <div class="input-box">
+            <input type="password" id="password" placeholder="Password" />
+        </div>
+        <div class="link-box" onclick="submitPassword()">
+            Submit
+        </div>
+        <div class="link-box" onclick="continueAsGuest()">
+            Continue as Guest
+        </div>
+    </div>
+
+    <!-- Main Content (Initially Hidden) -->
+    <div id="content">
+        <div class="window-container" id="window-container">
+            <!-- Main Window -->
+            <div class="window" id="draggable-window">
+                <div class="close-button" onclick="closeWindow('draggable-window')">X</div>
+                <div class="text-box">@21wocky</div>
+                <div class="link-box">
+                    <a href="https://discord.gg/mPnMM3xv" target="_blank">Discord Server</a>
+                </div>
+                <div class="link-box">
+                    <a href="https://www.roblox.com/users/7528169573/profile" target="_blank">Roblox Profile</a>
+                </div>
+                <div class="link-box">
+                    <a href="https://adurite.com/shop/21wocky" target="_blank">Adurite Shop</a>
+                </div>
+                <div class="link-box" onclick="copyBitcoinWallet()">
+                    Bitcoin Wallet
+                </div>
+            </div>
+
+            <!-- Admin Panel Window -->
+            <div class="window" id="admin-panel">
+                <div class="close-button" onclick="closeWindow('admin-panel')">X</div>
+                <div class="text-box">Admin Panel</div>
+                <div class="link-box" onclick="openAnnouncementModal()">Send Announcement</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcement Modal -->
+    <div id="announcementModal">
+        <div class="announcement-modal-close" onclick="closeAnnouncementModal()">X</div>
+        <div class="text-box">Send Announcement</div>
+        <textarea id="announcementMessage" class="announcement-input" placeholder="Enter your message here..."></textarea>
+        <button class="announcement-submit" onclick="sendAnnouncement()">Send Message</button>
+    </div>
+
+    <script>
+        // Hardcoded password
+        const correctPassword = "Arrowne123";
+
+        // Function to submit the password
+        function submitPassword() {
+            const password = document.getElementById('password').value.trim();
+            if (password === correctPassword) {
+                document.getElementById('passwordPrompt').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                document.getElementById('admin-panel').style.display = 'block';
+                centerWindows();
+            } else {
+                alert('Incorrect password!');
+            }
+        }
+
+        // Function to continue as guest
+        function continueAsGuest() {
+            document.getElementById('passwordPrompt').style.display = 'none';
+            document.getElementById('content').style.display = 'block';
+            centerWindows();
+        }
+
+        // Function to open the announcement modal
+        function openAnnouncementModal() {
+            document.getElementById('announcementModal').style.display = 'block';
+        }
+
+        // Function to close the announcement modal
+        function closeAnnouncementModal() {
+            document.getElementById('announcementModal').style.display = 'none';
+        }
+
+        // Function to send the announcement to a Discord webhook
+        async function sendAnnouncement() {
+            const message = document.getElementById('announcementMessage').value.trim();
+            if (message === "") {
+                alert("Please enter a message!");
+                return;
+            }
+
+            const webhookUrl = "https://discord.com/api/webhooks/1307511684176548001/yikqbYHDRy-BcawPozxSSpfO23ResXnna9nUkznt9oLWWOnImjHalTrb3nDiHoyKAH8G";
+            const payload = {
+                content: message
+            };
+
+            try {
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert("Announcement sent successfully!");
+                    closeAnnouncementModal();
+                } else {
+                    alert("Failed to send announcement!");
+                }
+            } catch (error) {
+                console.error("Error sending announcement:", error);
+                alert("An error occurred while sending the announcement.");
+            }
+        }
+
+        // Function to center the windows inside the container
+        function centerWindows() {
+            const container = document.getElementById('window-container');
+            const containerWidth = container.offsetWidth;
+            const containerHeight = container.offsetHeight;
+            const windowLeft = (window.innerWidth - containerWidth) / 2;
+            const windowTop = (window.innerHeight - containerHeight) / 2;
+            container.style.left = `${windowLeft}px`;
+            container.style.top = `${windowTop}px`;
+        }
+
+        // Close any window by ID
+        function closeWindow(windowId) {
+            document.getElementById(windowId).style.display = 'none';
+        }
+    </script>
+</body>
+</html>
